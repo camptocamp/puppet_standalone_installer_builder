@@ -21,7 +21,7 @@ check_puppet_ver() {
 install_puppet() {
   cat > /etc/apt/sources.list.d/puppet.list << EOF
 # file created by the GeoMapFish Installer
-deb [trusted=yes] file:/opt/<%= properties['profile'] %>-installer/packages/apt wheezy puppetlabs
+deb [trusted=yes] file:///opt/<%= properties['profile'] %>-installer/packages/apt wheezy puppetlabs
 EOF
 
   apt-get update
