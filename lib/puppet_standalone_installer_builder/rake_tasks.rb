@@ -54,9 +54,12 @@ end
 
 desc "Build md doc"
 task :build_md_doc do
+  profile = File.basename(Dir.pwd)[/^puppet-(.*)$/, 1]
   properties = File.file?('.psib.yaml') ?  YAML.load_file('.psib.yaml') : {}
   properties['profile'] ||= profile
   properties['title'] ||= properties['profile']
+  tag = `git describe --tags --exact-match`.strip
+  version = (tag unless tag.empty?) || 'dev'
 
   endusermd_template = ERB.new File.new(File.expand_path('../../../templates/ENDUSER.md.erb', __FILE__)).read, nil, "%"
   File.open('spec/fixtures/ENDUSER.md', 'w') { |file| file.write(endusermd_template.result(binding)) }
@@ -64,18 +67,52 @@ end
 
 desc "Build pdf doc"
 task :build_pdf_doc => [:build_md_doc] do
+  properties = File.file?('.psib.yaml') ?  YAML.load_file('.psib.yaml') : {}
   tag = `git describe --tags --exact-match`.strip
   version = (tag unless tag.empty?) || 'dev'
-  File.open('tex/docversion.tex', 'w') do
-    f.write("\\newcommand{\\docversion}{#{version}\n")
+  texdir = File.expand_path('../../../tex', __FILE__)
+  File.open(File.join(texdir, 'docversion.tex'), 'w') do |f|
+    f.write("\\newcommand{\\docversion}{#{version}}\n")
   end
 
-  texdir = File.expand_path('../../../tex')
-  ['README', 'ENDUSER'].each do |doc|
-    `cd #{texdir} && pandoc -o #{doc}.pdf #{doc}.md \
-    --latex-engine=xelatex  --toc -H "header-includes.tex" \
+  # Get forked unoconv
+  puts "Forking unoconv"
+  `git clone https://github.com/camptocamp/unoconv.git`
+
+  ott = File.expand_path('../../../templates/template_document_v2.2.ott', __FILE__)
+  # LibreOffice has this weird date format
+  date_today = `date +%s`.to_i
+  # Edge effect (2 days off)?
+  date_1900 = `date -d'12/30/1899' +%s`.to_i
+  date_uno = (date_today - date_1900)/86400
+  unoconv_cmd= "python3 unoconv/unoconv -f pdf \
+	 	-F Client_Name=\"#{properties['client_name']}\" \
+	 	-F Document_Last_Version=\"#{version}\" \
+		-F Document_Date=\"#{date_uno}\" \
+	 	--stdout"
+
+  docs = []
+  docs << { :file => File.expand_path('README.md'), :title => 'Module README' } if File.file?('README.md')
+  docs << { :file => File.expand_path('spec/fixtures/ENDUSER.md'), :title => 'End-User Documentation' }
+
+  docs.each do |doc|
+    base_doc = doc[:file].gsub(/\.md$/, '')
+    pdf_inside = "#{base_doc}_inside.pdf"
+    pdf_cover = "#{base_doc}_cover.pdf"
+
+    # Generate inside doc
+    pdf = "#{base_doc}.pdf"
+    `cd #{texdir} && pandoc -o #{pdf_inside} #{doc[:file]} \
+    --latex-engine=xelatex  --toc -H "header-includes.tex" -B "include-before.tex" \
     -V "lang=en" -V "mainfont=Gotham-Book" -V "documentclass=scrbook" \
     -V "classoption=open=any" -V "fontsize=10pt" -V "papersize=a4"`
+
+    # Generate cover
+    puts "Executing '`#{unoconv_cmd} -F Document_Type=\"#{properties['title']}\" \"#{ott}\" | pdftk - cat 1 end output \"#{pdf_cover}\"`'"
+    `#{unoconv_cmd} -F Document_Type="#{properties['title']}" -F Document_Title=\"#{doc[:title]}\" "#{ott}" | pdftk - cat 1 end output "#{pdf_cover}"`
+
+    # Assemble PDF
+    `pdftk A="#{pdf_cover}" B="#{pdf_inside}" cat A1 B A2 output "#{pdf}"`
   end
 end
 
