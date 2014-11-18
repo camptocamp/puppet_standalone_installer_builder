@@ -39,6 +39,7 @@ end
 desc 'Check tag'
 task :check_tag do
   fail "You must tag the current commit for a reproductible build." unless ENV['nocheck'] or ENV['nocheck_tag'] or !`git tag --contains $(git rev-parse HEAD)`.empty?
+  fail "You must push tags to origin." unless ENV['nocheck'] or ENV['nocheck_remote_tag'] or !`git ls-remote origin refs/tags/$(git tag --contains $(git rev-parse HEAD))`
 end
 
 desc 'Check pre-requirements'
