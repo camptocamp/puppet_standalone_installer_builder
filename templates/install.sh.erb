@@ -22,7 +22,7 @@ check_puppet_ver() {
 
 install_puppet() {
   cat > /etc/apt/sources.list.d/puppet.list << EOF
-# file created by the GeoMapFish Installer
+# file created by the Camptocamp standalone installer
 deb [trusted=yes] file:${BASEDIR}/packages/apt wheezy puppetlabs
 EOF
 
