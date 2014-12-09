@@ -36,8 +36,8 @@ cat > ${BASEDIR}/hiera.yaml << EOF
 :backends: yaml
 :yaml:
   :datadir: ${BASEDIR}/hiera
-  :hierarchy: server
-  :logger: console
+:hierarchy: server
+:logger: console
 EOF
 
 if [ -z "$1" ]; then
