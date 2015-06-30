@@ -50,6 +50,9 @@ task :reprepro do
     sh "reprepro -b packages/apt update"
     sh "reprepro -b packages/apt export"
   end
+  if File.file?('packages/yum/yum.conf')
+    sh "reposync -c packages/yum/yum.conf -p packages/yum/RPMS"
+  end
 end
 
 desc "Build the tarball"
@@ -60,6 +63,7 @@ task :build_tarball => [:build_check, :reprepro, :spec_prep, :spec_standalone] d
   tarball = "../#{profile}-installer-#{version}.tar.gz"
   base_path = "#{profile}-installer"
   apt_dir = 'packages/apt'
+  yum_dir = 'packages/yum'
 
   properties = File.file?('.psib.yaml') ?  YAML.load_file('.psib.yaml') : {}
   properties['profile'] ||= profile
@@ -75,7 +79,7 @@ task :build_tarball => [:build_check, :reprepro, :spec_prep, :spec_standalone] d
   packages  = 'packages' if File.exist?('packages')
   examples  = 'examples' if File.exist?('examples')
 
-  sh "tar cvzfh #{tarball} --owner=root --group=root #{readme} #{changelog} #{packages} #{examples} --exclude-from .gitignore --exclude .git --exclude #{apt_dir}/conf --exclude #{apt_dir}/lists --exclude #{apt_dir}/db -C spec/fixtures ENDUSER.md bin/ manifests/ --exclude manifests/site.pp modules/ --exclude modules/#{profile}/spec/fixtures/modules --exclude modules/#{profile}/packages --transform 's,^,#{base_path}/,'"
+  sh "tar cvzfh #{tarball} --owner=root --group=root #{readme} #{changelog} #{packages} #{examples} --exclude-from .gitignore --exclude .git --exclude #{apt_dir}/conf --exclude #{apt_dir}/lists --exclude #{apt_dir}/db --exclude #{yum_dir}/yum.conf -C spec/fixtures ENDUSER.md bin/ manifests/ --exclude manifests/site.pp modules/ --exclude modules/#{profile}/spec/fixtures/modules --exclude modules/#{profile}/packages --transform 's,^,#{base_path}/,'"
 
   puts "Tarball of module #{profile} built in #{tarball}."
 end
