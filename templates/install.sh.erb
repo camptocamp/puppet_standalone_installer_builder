@@ -21,14 +21,27 @@ check_puppet_ver() {
 }
 
 install_puppet() {
-  cat > /etc/apt/sources.list.d/puppet.list << EOF
+  if [ -f /etc/debian_version ]; then
+    cat > /etc/apt/sources.list.d/puppet.list << EOF
 # file created by the Camptocamp standalone installer
 deb [trusted=yes] file:${BASEDIR}/packages/apt wheezy puppetlabs
 EOF
 
-  apt-get update
-  apt-get install -y sudo
-  apt-get install -y puppet facter libaugeas-ruby1.9
+    apt-get update
+    apt-get install -y sudo
+    apt-get install -y puppet facter libaugeas-ruby1.9
+  else
+    cat > /etc/yum.repos.d/puppet.conf << EOF
+# file created by the Camptocamp standalone installer
+[puppetlabs]
+baseurl=file:///${BASEDIR}/packages/yum/RPMS/puppetlabs
+gpgcheck=0
+enabled=1
+EOF
+
+    yum install -y sudo
+    yum install -y puppet facter
+  fi
 }
 
 cat > ${BASEDIR}/hiera.yaml << EOF
