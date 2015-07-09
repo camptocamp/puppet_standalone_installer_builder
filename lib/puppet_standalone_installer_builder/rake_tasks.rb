@@ -52,6 +52,9 @@ task :reprepro do
   end
   if File.file?('packages/yum/yum.conf')
     sh "reposync -c packages/yum/yum.conf -p packages/yum/RPMS"
+    Dir.foreach('packages/yum/RPMS') do |repo|
+      sh "createrepo #{repo}"
+    end
   end
 end
 
