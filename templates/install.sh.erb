@@ -31,7 +31,7 @@ EOF
     apt-get install -y sudo
     apt-get install -y puppet facter libaugeas-ruby1.9
   else
-    cat > /etc/yum.repos.d/puppet.conf << EOF
+    cat > /etc/yum.repos.d/puppet.repo << EOF
 # file created by the Camptocamp standalone installer
 [puppetlabs]
 baseurl=file:///${BASEDIR}/packages/yum/RPMS/puppetlabs
