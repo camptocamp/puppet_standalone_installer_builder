@@ -51,7 +51,7 @@ task :reprepro do
     sh "reprepro -b packages/apt export"
   end
   if File.file?('packages/yum/yum.conf')
-    sh "reposync -d -c packages/yum/yum.conf -p packages/yum/RPMS"
+    sh "reposync -d -n -c packages/yum/yum.conf -p packages/yum/RPMS"
     Dir.foreach('packages/yum/RPMS').select { |e| e !~ /^\./ }.each do |repo|
       sh "createrepo packages/yum/RPMS/#{repo}"
     end
