@@ -3,6 +3,7 @@
 REQUIRED_PUPPET_VERSION=<%= properties['min_puppet_version'] %>
 BINDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 BASEDIR=$(echo ${BINDIR%/*})
+PATH=/opt/puppetlabs/bin:$PATH
 
 check_puppet_ver() {
   puppet_bin=$(which puppet)
@@ -29,7 +30,7 @@ EOF
 
     apt-get update
     apt-get install -y sudo
-    apt-get install -y puppet facter libaugeas-ruby1.9
+    apt-get install -y puppet-agent
   else
     cat > /etc/yum.repos.d/puppet.repo << EOF
 # file created by the Camptocamp standalone installer
@@ -40,7 +41,7 @@ enabled=1
 EOF
 
     yum install -y sudo
-    yum install -y puppet facter
+    yum install -y puppet-agent
   fi
 }
 
@@ -70,5 +71,5 @@ fi
 
 echo "Running Puppet..."
 export FACTER_puppet_installer_basedir=$BASEDIR
-puppet apply --confdir $BASEDIR $@
+puppet apply --modulepath $BASEDIR/modules $@
 
