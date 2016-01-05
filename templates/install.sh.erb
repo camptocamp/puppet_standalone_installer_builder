@@ -29,7 +29,7 @@ deb [trusted=yes] file:${BASEDIR}/packages/apt wheezy puppetlabs
 EOF
 
     apt-get update
-    apt-get install -y sudo
+    apt-get install -y sudo lsb-release
     apt-get install -y puppet-agent
   else
     cat > /etc/yum.repos.d/puppet.repo << EOF
