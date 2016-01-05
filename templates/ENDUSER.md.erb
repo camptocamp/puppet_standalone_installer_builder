@@ -24,7 +24,7 @@ Here is a simple template you can use or take inspiration from.
     Exec { path => '/usr/bin:/usr/sbin/:/bin:/sbin:/usr/local/bin:/usr/local/sbin' }
 
     # This is a simple <%= properties['title'] %> class declaration 
-    <%= properties['enduser_sample_declaration'].split("\n").map do |line| "    "+line end.join("\n") %>
+<%= properties['enduser_sample_declaration'].split("\n").map do |line| "    "+line end.join("\n") %>
 
     # Configure a system user called 'mike' for an application developper
     user {'mike':
