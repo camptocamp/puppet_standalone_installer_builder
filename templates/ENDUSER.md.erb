@@ -3,7 +3,7 @@
 ## Step By Step Installation
 
 * Extract the `<%= properties['profile'] %>-installer-<%= version %>.tar.gz`
-* Optionaly create a node definition file with the server's recipe (puppet code)
+* Create a node definition file with the server's recipe (puppet code)
 * Run the main installation script
 
 ### Extract the installer
@@ -45,7 +45,7 @@ Checkout out the README.pdf file included with the installer for a complete docu
 
 ### Run the installation script
 
-This script will update Puppet if necessary and run Puppet with the good arguments. It must be run as root.
+This script will update Puppet if necessary and run Puppet with your server's definition. It must be run as root.
 
     /opt/<%= properties['profile'] %>-installer/bin/install.sh server.pp
 
@@ -61,7 +61,7 @@ Have fun!
 
 Puppet can automatically retrieve class parameters from Hiera. This means that you can assign values to optional class parameters not explicitly set in the declarations.
 
-For this, you just have to create the directory in which to find hiera data and a simple data source called server.yaml to put your entries. A basic hiera configuration file is automatically created at the root of the installer as described in the [official Hiera documentation](https://docs.puppetlabs.com/hiera/1/).
+For this, you just have to create a directory named 'hiera' and a data source named server.yaml in it with your entries. A basic hiera configuration file is automatically created at the root of the installer as described in the [official Hiera documentation](https://docs.puppetlabs.com/hiera/1/).
 
 ## Usage with existing Puppet recipes (your own Puppetmaster server)
 
