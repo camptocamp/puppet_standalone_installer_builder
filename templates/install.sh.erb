@@ -23,13 +23,14 @@ check_puppet_ver() {
 
 install_puppet() {
   if [ -f /etc/debian_version ]; then
-    cat > /etc/apt/sources.list.d/puppet.list << EOF
-# file created by the Camptocamp standalone installer
-deb [trusted=yes] file:${BASEDIR}/packages/apt wheezy puppetlabs
-EOF
-
     apt-get update
     apt-get install -y sudo lsb-release
+    DIST=$(lsb_release -cs)
+    cat > /etc/apt/sources.list.d/puppet.list << EOF
+# file created by the Camptocamp standalone installer
+deb [trusted=yes] file:${BASEDIR}/packages/apt ${DIST} puppetlabs
+EOF
+    apt-get update
     apt-get install -y puppet-agent
   else
     cat > /etc/yum.repos.d/puppet.repo << EOF
