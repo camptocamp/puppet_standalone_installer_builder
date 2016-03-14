@@ -57,6 +57,18 @@ If you fixed mistakes in the node definition file or want to add resources for e
 
 Have fun!
 
+## Troubleshooting
+
+### `Package[foobarbaz]/ensure: change from purged to present failed`
+
+Make sure you specified the correct version of software that should be installed, by setting the `*_version` parameters (e.g. `mapserver_version`, `mapcache_version`, etc.).
+
+Also make sure that the official Debian repositories are correctly configured in the Apt [sources.list](https://wiki.debian.org/SourcesList), with the `main`, `contrib`, and `non-free` components enabled. Run `apt-get update` to ensure all configured sources are accessible and Apt's indexes are up-to-date.
+
+### `libfacter was not found`
+
+This error means that the locales related environment variables are set to some locale that is not installed on your system. This often happens when these variables are propagated through an SSH connection. To fix the problem, either install the missing locale (e.g. by installing the `locales-all` package) or make sure the `LC_NAME` environment variable is not set (e.g. by running `unset LC_NAME` before running the installer).
+
 ## Automatic Parameter Lookup
 
 Puppet can automatically retrieve class parameters from Hiera. This means that you can assign values to optional class parameters not explicitly set in the declarations.
