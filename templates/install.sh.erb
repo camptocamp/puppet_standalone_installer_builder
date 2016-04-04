@@ -72,5 +72,5 @@ fi
 
 echo "Running Puppet..."
 export FACTER_puppet_installer_basedir=$BASEDIR
-puppet apply --modulepath $BASEDIR/modules $@
+puppet apply --modulepath $BASEDIR/modules --hiera_config $BASEDIR/hiera.yaml $@
 
