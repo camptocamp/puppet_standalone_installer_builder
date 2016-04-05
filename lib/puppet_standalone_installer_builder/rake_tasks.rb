@@ -87,8 +87,30 @@ task :build_tarball => [:build_check, :reprepro, :spec_prep, :spec_standalone] d
   puts "Tarball of module #{profile} built in #{tarball}."
 end
 
+desc "Build accompanying documentation files"
+task :build_accompanying_doc do
+  profile = File.basename(Dir.pwd)[/^puppet-(.*)$/, 1]
+  tag = `git describe --tags --exact-match`.strip
+  version = (tag unless tag.empty?) || 'dev'
+
+  properties = File.file?('.psib.yaml') ?  YAML.load_file('.psib.yaml') : {}
+  properties['profile'] ||= profile
+  properties['title'] ||= properties['profile']
+  endusermd_template = ERB.new File.new(File.expand_path('../../../templates/ENDUSER.md.erb', __FILE__)).read, nil, "%"
+  File.open('spec/fixtures/ENDUSER.md', 'w') { |file| file.write(endusermd_template.result(binding)) }
+
+  enduser = 'spec/fixtures/ENDUSER.md'
+  changelog = 'CHANGELOG.md' if File.file?('CHANGELOG.md')
+
+  sh "markdown #{enduser} > ../ENDUSER-#{version}.html"
+  sh "markdown #{changelog} > ../CHANGELOG-#{version}.html" if changelog
+  File.open(File.expand_path('../LATEST_GEOMAPFISH_INSTALLER'),'w') { |file| file.write(version) } unless version == 'dev'
+
+  puts "Accompanying documentation for module #{profile} built in parent directory."
+end
+
 desc "Build standalone installer archive"
-task :build_standalone_installer => [:build_tarball, :spec_clean]
+task :build_standalone_installer => [:build_tarball, :build_accompanying_doc, :spec_clean]
 
 desc "Display the list of available rake tasks"
 task :help do
