@@ -6,6 +6,13 @@ Overview
 
 Helps you to build standalone installers for puppet.
 
+Debian requirements
+-----
+
+```
+sudo apt-get install yum-utils createrepo
+```
+
 Usage
 -----
 
