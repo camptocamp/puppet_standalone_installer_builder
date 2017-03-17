@@ -14,7 +14,7 @@ check_puppet_ver() {
     installed_puppet_version=0
   fi
   
-  if [ $(echo -e "$installed_puppet_version\n$REQUIRED_PUPPET_VERSION" | sort -V | head -n1) != "$REQUIRED_PUPPET_VERSION" ]; then
+  if [ "$(echo -e "$installed_puppet_version\n$REQUIRED_PUPPET_VERSION" | sort -V | head -n1)" != "$REQUIRED_PUPPET_VERSION" ]; then
     return 1 # must be installed / upgraded
   else
     return 0 # version is ok
