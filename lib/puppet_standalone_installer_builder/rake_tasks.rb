@@ -82,7 +82,7 @@ task :build_tarball => [:build_check, :reprepro, :spec_prep, :spec_standalone] d
   packages  = 'packages' if File.exist?('packages')
   examples  = 'examples' if File.exist?('examples')
 
-  sh "tar cvzfh #{tarball} --owner=root --group=root #{readme} #{changelog} #{packages} #{examples} --exclude-from .gitignore --exclude .git --exclude #{apt_dir}/conf --exclude #{apt_dir}/lists --exclude #{apt_dir}/db --exclude #{yum_dir}/yum.conf -C spec/fixtures ENDUSER.md bin/ manifests/ --exclude manifests/site.pp modules/ --exclude modules/#{profile}/spec/fixtures/modules --exclude modules/#{profile}/packages --transform 's,^,#{base_path}/,'"
+  sh "tar cvzfh #{tarball} --owner=root --group=root --exclude-from .gitignore --exclude .git --exclude #{apt_dir}/conf --exclude #{apt_dir}/lists --exclude #{apt_dir}/db --exclude #{yum_dir}/yum.conf #{readme} #{changelog} #{packages} #{examples} -C spec/fixtures ENDUSER.md --exclude manifests/site.pp --exclude modules/#{profile}/spec/fixtures/modules --exclude modules/#{profile}/packages modules/ bin/ manifests/ --transform 's,^,#{base_path}/,'"
 
   puts "Tarball of module #{profile} built in #{tarball}."
 end
